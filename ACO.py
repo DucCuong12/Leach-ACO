@@ -100,7 +100,11 @@ class AntColonyOptimization(object):
         row = pheromone ** self.alpha * (( 1.0 / dist) ** self.beta)
         print("row")
         print(row)
-        norm_row = row / row.sum()
+        epsilon = 1e-10 
+        if row.sum()!=0:
+            norm_row = row / row.sum()
+        else:
+            norm_row = row / row.sum()+epsilon
         print("norm_row")
         print(norm_row)
         move = np_choice(self.all_inds, 1, p=norm_row)[0]
