@@ -18,7 +18,7 @@ ETX = 50 * 0.00001
 ERX = 50 * 0.00001
 min_percentage = 0.1
 max_percentage = 0.2
-a = min_percentage * num
+a = min_percentage * num               #a, b stand for
 b = max_percentage * num
 min_CHs = math.ceil(a)
 max_CHs = math.ceil(b)
@@ -51,6 +51,8 @@ class Node:
 def distance(node1, node2):
     return math.sqrt((node1.x - node2.x)**2 + (node1.y - node2.y)**2)
 
+
+#generate node for problem
 def generate_nodes():
     global nodes, norm_nodes
     for i in range(num):
@@ -72,15 +74,15 @@ def generate_nodes():
                     dist = min(distance(node2, other_node) for other_node in nodes if other_node != node2)
                 G.nodes[node2.id]["x"] = node2.x
                 G.nodes[node2.id]["y"] = node2.y    
-
+# chọn CH node ban đầu
 def select_CH(round):
-    global norm_nodes, CH_nodes
+    global norm_nodes, CH_nodes  #norm node chứa các nút khởi tạo ban đầu
     for node in norm_nodes:
         temp = random.uniform(0,1)
         dist = float('inf')
         if len(CH_nodes) != 0:
             dist = min(distance(node, CH_node) for CH_node in CH_nodes if node != CH_node)
-        if temp < node.Tk and dist > 30:
+        if temp < node.Tk and dist > 30:          #xác suất bé hơn 1 lượng + far from the list of CH
             node.cluster_head = True
             G.nodes[node.id]['cluster_head'] = True
             node.cluster_id = node.id
@@ -101,7 +103,7 @@ def update_norm_nodes(round):
         p = max_percentage
     n = math.ceil(1 / p)
     for node in nodes:
-        if node.CHr >= 0 and round - node.CHr >= n:
+        if node.CHr >= 0 and round - node.CHr >= n:  # kiểm tra xem 1 node lần cuối làm CH là bao lâu, nếu làm CH node quá n lần thì đổi
             if node not in norm_nodes:
                 norm_nodes.append(node)
                 node.cluster_head = False
@@ -118,7 +120,7 @@ def update_norm_nodes(round):
 def update_Tk(round):
     global nodes, norm_nodes
     for node in nodes:
-        if node not in norm_nodes:
+        if node not in norm_nodes:   # 1 node là central
             node.Tk = 0
         else:
             node.Tk = p / (1 - p * (float(round) % (1/ p)))
@@ -138,7 +140,7 @@ def form_clusters():
             if distance_to_CH < min_distance:
                 min_distance = distance_to_CH
                 closest_CH = CH_node
-                if min_distance <= CH_node.sens_range:
+                if min_distance <= CH_node.sens_range:   ################
                     node.cluster_id = CH_node.id
         if min_distance <= (node.sens_range) and node.cluster_id == closest_CH.id:
             G.add_edge(node.id, closest_CH.id, style='solid', edge_color='green')           
